@@ -432,7 +432,4 @@ The project demonstrates how AI-based knowledge retrieval can be combined with e
 **Framework:** Flask  
 **AI Integration:** Google Gemini  
 **Vector Database:** ChromaDB
-#   G E N E R A T I V E - A I - R A G - M O D E L -  
- #   G E N E R A T I V E - A I - R A G - M O D E L -  
- #   G E N E R A T I V E - A I - R A G - M O D E L -  
- 
+#

@@ -1,0 +1,6 @@
+Customers must retain the order reference for collection.
+
+Check the completed order before leaving the counter.
+Report missing copies or visible printing defects to staff.
+
+The assistant provides an estimate and does not upload, inspect, or print a document.

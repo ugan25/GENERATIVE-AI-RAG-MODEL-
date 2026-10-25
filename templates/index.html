@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Printing Services Assistant</title>
+  <style>
+    :root{font-family:Inter,Segoe UI,Arial,sans-serif;color:#182230;background:#f3f6fb}*{box-sizing:border-box}body{margin:0;padding:32px 16px}.wrap{max-width:980px;margin:auto}.hero{background:#172b4d;color:white;padding:28px;border-radius:18px;margin-bottom:20px}.hero h1{margin:0 0 8px}.hero p{margin:0;color:#dce7f7}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:20px}.panel{background:white;border:1px solid #e1e7ef;border-radius:16px;padding:22px;box-shadow:0 8px 28px #102a4310}h2{font-size:20px;margin-top:0}label{display:block;font-weight:600;margin:14px 0 6px}input,select{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:9px;font-size:15px;background:white}button{margin-top:18px;padding:12px 16px;border:0;border-radius:9px;background:#1769e0;color:white;font-weight:700;font-size:15px;cursor:pointer}button:hover{background:#0e54bb}.check{display:flex;gap:9px;align-items:center;margin-top:14px}.check input{width:auto}.check label{margin:0}.result{background:#edf8f1;border:1px solid #b9e5c8;border-radius:12px;padding:16px;margin-top:16px}.error{background:#fff1f0;border:1px solid #ffccc7;padding:12px;border-radius:10px;color:#a61d24}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{padding:12px;background:#fff;border:1px solid #d8e7dc;border-radius:10px}.metric span{display:block;color:#5d6b64;font-size:13px}.metric strong{font-size:19px}.small{font-size:13px;color:#65758b}.answer{white-space:pre-wrap;line-height:1.55;margin-top:14px}.footer{font-size:13px;color:#64748b;margin-top:18px}
+  </style>
+</head>
+<body><main class="wrap">
+  <header class="hero"><h1>Printing Services Assistant</h1><p>Estimate printed sides, paper sheets, printing cost, and optional binding. Ask the RAG assistant about print-shop rules.</p></header>
+  <div class="grid">
+    <section class="panel"><h2>Print order estimate</h2>
+      <form method="post" action="/estimate">
+        <label for="pages">Pages per copy</label><input id="pages" name="pages" type="number" min="1" step="1" required placeholder="e.g. 5">
+        <label for="copies">Number of copies</label><input id="copies" name="copies" type="number" min="1" step="1" required placeholder="e.g. 3">
+        <label for="colour_mode">Colour mode</label><select id="colour_mode" name="colour_mode"><option value="black_white">Black-and-white (INR 2 per side)</option><option value="colour">Colour (INR 8 per side)</option></select>
+        <div class="check"><input id="double_sided" name="double_sided" value="yes" type="checkbox"><label for="double_sided">Double-sided printing</label></div>
+        <div class="check"><input id="binding_required" name="binding_required" value="yes" type="checkbox"><label for="binding_required">Binding (INR 30 per copy)</label></div>
+        <button type="submit">Estimate print order</button>
+      </form>
+      {% if error %}<div class="error" role="alert">{{ error }}</div>{% endif %}
+      {% if result %}<div class="result"><h3>Estimated order cost</h3><div class="metrics">
+        <div class="metric"><span>Printed sides</span><strong>{{ result.printed_sides }}</strong></div>
+        <div class="metric"><span>Paper sheets</span><strong>{{ result.paper_sheets }}</strong></div>
+        <div class="metric"><span>Printing charge</span><strong>INR {{ '%.2f'|format(result.printing_charge) }}</strong></div>
+        <div class="metric"><span>Binding charge</span><strong>INR {{ '%.2f'|format(result.binding_charge) }}</strong></div>
+      </div><p><strong>Total: INR {{ '%.2f'|format(result.total) }}</strong></p><p class="small">Estimate only. Each copy is calculated separately; odd pages do not share a sheet across copies.</p></div>{% endif %}
+    </section>
+    <section class="panel"><h2>Ask about printing</h2><p class="small">Answers are grounded in the print-shop knowledge documents using Gemini embeddings and retrieval.</p>
+      <form id="askForm"><label for="question">Your question</label><input id="question" name="question" required placeholder="Does double-sided reduce the charge?"><button type="submit">Ask assistant</button></form>
+      <div id="answer" class="answer" aria-live="polite"></div><p class="footer">Scope: guidance and estimates only. This app does not accept document uploads or send print jobs.</p>
+    </section>
+  </div>
+</main><script>
+document.getElementById('askForm').addEventListener('submit',async(e)=>{e.preventDefault();const out=document.getElementById('answer');out.textContent='Thinking…';try{const res=await fetch('/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:document.getElementById('question').value})});const data=await res.json();if(!res.ok)throw new Error(data.error+(data.details?' — '+data.details:''));out.textContent=data.answer+'\n\nSources: '+(data.sources||[]).join(', ');}catch(err){out.textContent='Error: '+err.message;}});
+</script></body></html>

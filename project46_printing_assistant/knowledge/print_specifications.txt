@@ -1,0 +1,7 @@
+The print shop accepts documents with a declared page count.
+
+Black-and-white printing costs INR 2 per printed side.
+Colour printing costs INR 8 per printed side.
+
+Single-sided printing uses one sheet per document page.
+Double-sided printing uses one sheet for every two pages, rounded upward for each copy.

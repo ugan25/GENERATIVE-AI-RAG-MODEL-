@@ -1,0 +1,61 @@
+
+description: "Project 46 - Printing Services Assistant RAG Evaluation"
+
+prompts:
+  - "{{question}}"
+
+providers:
+  - id: http
+    config:
+      url: "http://127.0.0.1:5000/ask"
+      method: POST
+      headers:
+        Content-Type: application/json
+      body:
+        question: "{{prompt}}"
+      transformResponse: "json.answer"
+
+tests:
+  - description: "Double-sided printing charge rule"
+    vars:
+      question: "Does double-sided printing reduce printing charge?"
+    assert:
+      - type: icontains
+        value: "printed side"
+      - type: icontains
+        value: "paper"
+
+  - description: "Collection policy"
+    vars:
+      question: "What should customers retain for collection?"
+    assert:
+      - type: icontains
+        value: "order reference"
+
+  - description: "Binding price"
+    vars:
+      question: "How much does optional binding cost per copy?"
+    assert:
+      - type: icontains
+        value: "30"
+
+  - description: "Black-and-white printing price"
+    vars:
+      question: "What is the black-and-white printing charge per side?"
+    assert:
+      - type: icontains
+        value: "2"
+
+  - description: "Colour printing price"
+    vars:
+      question: "What is the colour printing charge per side?"
+    assert:
+      - type: icontains
+        value: "8"
+
+  - description: "Live order status is out of scope"
+    vars:
+      question: "Has my document finished printing?"
+    assert:
+      - type: javascript
+        value: "!(/your document is ready|your order is ready|it has finished printing/i.test(output))"

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Project 46 — Printing Services Assistant</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="container">
+    <header>
+      <p class="eyebrow">PROJECT 46</p>
+      <h1>Printing Services Assistant</h1>
+      <p class="sub">Estimate printing quantities and ask questions about shop policies.</p>
+    </header>
+
+    <section class="panel">
+      <h2>Print order estimate</h2>
+      <form method="post">
+        <input type="hidden" name="action" value="estimate">
+        <div class="fields">
+          <label>Pages per copy
+            <input type="number" name="pages" min="1" step="1" required value="{{ request.form.get('pages', '5') }}">
+          </label>
+          <label>Number of copies
+            <input type="number" name="copies" min="1" step="1" required value="{{ request.form.get('copies', '3') }}">
+          </label>
+          <label>Colour mode
+            <select name="colour_mode">
+              <option value="black_white" {% if request.form.get('colour_mode', 'black_white') == 'black_white' %}selected{% endif %}>Black-and-white — INR 2/side</option>
+              <option value="colour" {% if request.form.get('colour_mode') == 'colour' %}selected{% endif %}>Colour — INR 8/side</option>
+            </select>
+          </label>
+          <label>Printing sides
+            <select name="double_sided">
+              <option value="no" {% if request.form.get('double_sided', 'yes') == 'no' %}selected{% endif %}>Single-sided</option>
+              <option value="yes" {% if request.form.get('double_sided', 'yes') == 'yes' %}selected{% endif %}>Double-sided</option>
+            </select>
+          </label>
+          <label class="check"><input type="checkbox" name="binding_required" value="yes" {% if request.form.get('binding_required') == 'yes' %}checked{% endif %}> Add binding (INR 30 per copy)</label>
+        </div>
+        <button type="submit">Estimate print order</button>
+      </form>
+
+      {% if error %}<div class="notice error">{{ error }}</div>{% endif %}
+      {% if estimate %}
+      <div class="result">
+        <h3>Estimated result</h3>
+        <div class="result-grid">
+          <div><span>Printed sides</span><strong>{{ estimate.printed_sides }}</strong></div>
+          <div><span>Paper sheets</span><strong>{{ estimate.paper_sheets }}</strong></div>
+          <div><span>Printing charge</span><strong>INR {{ estimate.printing_charge }}</strong></div>
+          <div><span>Binding charge</span><strong>INR {{ estimate.binding_charge }}</strong></div>
+        </div>
+        <div class="total"><span>Estimated total</span><strong>INR {{ estimate.total }}</strong></div>
+        <p class="small">Estimate only. No document is uploaded, inspected, or sent to a printer.</p>
+      </div>
+      {% endif %}
+    </section>
+
+    <section class="panel">
+      <h2>Ask the shop guide (RAG)</h2>
+      <p class="small">Try: “Does double-sided printing reduce the printing charge?” or “What should customers retain for collection?”</p>
+      <form method="post">
+        <input type="hidden" name="action" value="ask">
+        <label>Your question
+          <textarea name="question" rows="3" required placeholder="Ask about printing rules or collection policy...">{{ question }}</textarea>
+        </label>
+        <button type="submit">Ask assistant</button>
+      </form>
+      {% if answer %}<div class="answer"><h3>Answer</h3><p>{{ answer }}</p></div>{% endif %}
+    </section>
+    <footer>Project 46 · Retrieval-Augmented Generation with embeddings + Ollama LLM</footer>
+  </main>
+</body>
+</html>

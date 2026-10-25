@@ -1,0 +1,11 @@
+# Project 46 - Printing Services Assistant
+
+# Core Dependencies
+Flask>=3.0.0
+python-dotenv>=1.0.0
+google-genai>=1.0.0
+chromadb>=1.5.0
+numpy>=1.26.0
+
+# Testing
+pytest>=8.0.0

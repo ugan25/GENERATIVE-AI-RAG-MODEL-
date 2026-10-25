@@ -1,0 +1,7 @@
+Provide the page count, number of copies, colour mode, and single-sided or double-sided preference.
+
+Printing is charged per printed side, not per sheet.
+Double-sided printing reduces paper use but does not reduce the printing charge in this exercise.
+
+Optional binding costs INR 30 per copy.
+Each copy is printed and bound separately.
